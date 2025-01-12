@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { dfs } from "./dfs";
 import { bfs } from "./bfs";
 
-const objectToMap = (obj: Object): Map<number, Array<number>> => {
+export const objectToMap = (obj: Object): Map<number, Array<number>> => {
     const map = new Map<number, Array<number>>();
 
     for(let key in obj) {
