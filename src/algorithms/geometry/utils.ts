@@ -3,6 +3,12 @@ export type Point = {
     y: number,
 }
 
+export type Segment = {
+    a: Point,
+    b: Point
+}
+
+
 const scalarProduct = (p1: Point, p2: Point): number => {
     return p1.x * p2.x + p1.y * p2.y;
 
@@ -43,6 +49,13 @@ export const pointFrom = (x: number, y: number): Point => {
 }
 
 export const p = pointFrom;
+
+export const segment = (p1: Point, p2: Point): Segment => {
+    return {
+        a: p1,
+        b: p2
+    }
+}
 
 export const isConvex = (points: Point[]) => {
     const n = points.length;
@@ -110,7 +123,7 @@ export const grahamScan = (pts: Point[]): Point[] => {
         // while the orientation is negative        
         while (wrapper.length > 1 && orientation(
             points[wrapper[wrapper.length - 2]],
-            points[wrapper[wrapper.length-1]],
+            points[wrapper[wrapper.length - 1]],
             points[i]) < 0
         ) {
             wrapper.pop();
@@ -119,4 +132,30 @@ export const grahamScan = (pts: Point[]): Point[] => {
     }
 
     return wrapper.map(pIndex => points[pIndex]);
+}
+
+export const segmentIntersect = (p: Segment, q: Segment): boolean => {
+    const {a, b} = p;
+    const {a: m, b: n} = q;
+
+    // projection of segments on X axis don't overlap - segments
+    // don't cross
+    if(b.x < m.x || n.x < a.x) {
+        return false;
+    }
+
+    // if projection of segments on y axis don't overlap
+    // segments don't cross
+    if(b.y < m.y || n.y < a.y) {
+        return false;
+    }
+
+    // this means projection intersect but
+    // have to check if both endpoints of second
+    // are not on the same side
+    if(orientation(a, b, m) === orientation(a, b, n)) {
+        return false;
+    }
+
+    return true;
 }

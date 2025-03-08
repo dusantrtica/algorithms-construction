@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { colienar, findMinPointIdx, grahamScan, insideAngle, isConvex, p, Point, pointFrom } from "./utils";
+import { colienar, findMinPointIdx, grahamScan, insideAngle, isConvex, p, Point, pointFrom, segment, segmentIntersect } from "./utils";
 
 describe('geometry', () => {
     it('returns true if points are colinear', () => {
@@ -96,6 +96,32 @@ describe('geometry', () => {
                 p(2, 3),
                 p(1, 2)
             ])
+        })
+    })
+
+    describe('segmentsIntersect', () => {
+        it('returns false if segments dont cross and one is below another', () => {
+            const s1 = segment(p(5,5), p(10, 5));
+            const s2 = segment(p(7,1), p(9,3))
+            expect(segmentIntersect(s1, s2)).toBe(false);
+        })
+
+        it('returns false if segments dont cross and one is beside another', () => {
+            const s1 = segment(p(5,5), p(10, 5));
+            const s2 = segment(p(11,1), p(12,10))
+            expect(segmentIntersect(s1, s2)).toBe(false);
+        })
+
+        it('returns true if segments cross', () => {
+            const s1 = segment(p(5,5), p(10, 5));
+            const s2 = segment(p(7,1), p(12,10))
+            expect(segmentIntersect(s1, s2)).toBe(true);
+        });
+
+        it("returns false if segments are not crossing but inclined to x axis", () => {
+            const s1 = segment(p(1,1), p(5,5));
+            const s2 = segment(p(2,1), p(6,5))
+            expect(segmentIntersect(s1, s2)).toBe(false);
         })
     })
 })
