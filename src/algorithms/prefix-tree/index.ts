@@ -1,9 +1,32 @@
-class Node {
+export class Node implements Iterable<Node> {
     wordTerminated = false;
     private _children: Map<string, Node>;
 
     constructor() {
         this._children = new Map<string, Node>();
+    }
+
+    *[Symbol.iterator](): Iterator<any> {
+        const stack = [["", this as Node]];
+
+        while (stack.length) {
+            const [textSoFar, node] = stack.pop() as [string, Node];
+            if(node.wordTerminated) {                
+                yield textSoFar;
+            }
+
+            for (const child of node._children) {
+                stack.push([textSoFar + child[0], child[1]]);
+            }
+        }
+    }
+
+    map(cbk: Function): Node[] {
+        const result: Node[] = [];
+        for (const node of this) {
+            result.push(cbk(node));
+        }
+        return result;
     }
 
     count(): number {
@@ -89,20 +112,31 @@ export class Trie {
         return words;
     }
 
-    wordsWithPrefix(prefix: string) {
+    nodeWithPrefix = (prefix: string): Node => {
+        const n = prefix.length;
         let currentNode = this.root;
-        for (let c of prefix) {
+        for (let i = 0; i < n; i++) {
+            const c = prefix[i];
             if (!currentNode.has(c)) {
-                return [];
+                return new Node(); // empty node so mapping works
             } else {
-                currentNode = currentNode.get(c) as Node;
+                currentNode = currentNode.get(c);
             }
-        }        
-        return this.toList(currentNode).map(word => prefix + word);
+        }
+
+        return currentNode;
+    }
+
+    wordsWithPrefix(prefix: string) {      
+        const node = this.nodeWithPrefix(prefix);
+        if(node !== null) {
+            return this.toList(node).map(word => prefix + word);
+        }    
+        return [];
     }
 }
 
-export const longestCommonPrevix = (words: string[]): string => {
+export const longestCommonPrefix = (words: string[]): string => {
     const trie = new Trie();
     for (let w of words) {
         trie.addWord(w);

@@ -1,5 +1,5 @@
 import { beforeEach, describe, it, expect } from 'vitest';
-import { longestCommonPrevix, Trie } from ".";
+import { longestCommonPrefix, Node, Trie } from ".";
 
 describe('Trie', () => {
     let trie: Trie;
@@ -36,6 +36,30 @@ describe('Trie', () => {
 
 describe('Longest common prefix', () => {
     it("returns longest common prefix for array of words", () => {
-        expect(longestCommonPrevix(["code", "coding", "codecs", "coding"])).toEqual("cod");
+        expect(longestCommonPrefix(["code", "coding", "codecs", "coding"])).toEqual("cod");
+    })
+})
+
+describe("Iterator from Node", () => {
+    let trie: Trie;
+
+    beforeEach(() => {
+        trie = new Trie()
+        trie.addWord("ban");
+        trie.addWord("band");
+        trie.addWord("banana");
+        trie.addWord("bananas");
+        trie.addWord("banner");
+    });
+    it("returns traverses all nodes from the starting node", () => {
+        const node = trie.nodeWithPrefix("ban");
+        const result = node.map((e: String) => e);
+        expect(new Set(result)).toEqual(new Set(["", "d", "ana", "anas", "ner"]));
+    });
+
+    it("returns empty array if there is no words with prefix", () => {
+        const node = trie.nodeWithPrefix("x");
+        const result = node.map((e: String) => e);
+        expect(result).toEqual([]);
     })
 })
