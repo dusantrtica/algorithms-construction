@@ -70,48 +70,6 @@ export class Trie {
         currNode.wordTerminated = true;
     }
 
-    containsWord(word: string): boolean {
-        let currNode = this.root;
-
-        for (let c of word) {
-            if (!currNode.has(c)) {
-                return false;
-            }
-            currNode = currNode.get(c);
-        }
-        return currNode.wordTerminated;
-    }
-
-    commonWord(): string {
-        let currentNode = this.root;
-        let commonLetters: string[] = []
-        while (true) {
-            if (currentNode.wordTerminated || currentNode.count() > 1) {
-                break;
-            }
-            const keys = currentNode.keys()
-            commonLetters.push(keys[0])
-            currentNode = currentNode.get(keys[0]);
-        }
-
-        return commonLetters.join("");
-    }
-
-    traverse(node: Node, cbk: Function, currWord: string = "") {        
-        if (node.wordTerminated) {
-            cbk(currWord)
-        }
-        for(let key of node.keys()) {
-            this.traverse(node.get(key), cbk, currWord + key);
-        }
-    }
-
-    toList(fromNode: Node = this.root): string[] {
-        const words: string [] = []
-        this.traverse(fromNode, (word: string) => {words.push(word)})
-        return words;
-    }
-
     nodeWithPrefix = (prefix: string): Node => {
         const n = prefix.length;
         let currentNode = this.root;
@@ -126,21 +84,4 @@ export class Trie {
 
         return currentNode;
     }
-
-    wordsWithPrefix(prefix: string) {      
-        const node = this.nodeWithPrefix(prefix);
-        if(node !== null) {
-            return this.toList(node).map(word => prefix + word);
-        }    
-        return [];
-    }
-}
-
-export const longestCommonPrefix = (words: string[]): string => {
-    const trie = new Trie();
-    for (let w of words) {
-        trie.addWord(w);
-    }
-
-    return trie.commonWord();
 }
